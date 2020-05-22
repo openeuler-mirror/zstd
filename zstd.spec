@@ -65,7 +65,7 @@ install -D -m644 programs/zstd.1 %{buildroot}%{_mandir}/man1/pzstd.1
 %endif
 
 %files
-%doc NEWS README.md
+%doc CHANGELOG README.md
 %license LICENSE COPYING
 %{_bindir}/*
 
@@ -88,8 +88,8 @@ install -D -m644 programs/zstd.1 %{buildroot}%{_mandir}/man1/pzstd.1
 * Fri May 22 2020 SimpleUpdate Robot <tc@openeuler.org>
 - Update to version 1.4.4
 
-* Mon Jan 13 2020 openEuler Buildteam <buildteam@openeuler.org> - 1.4.4-3
+* Mon Jan 13 2020 openEuler Buildteam <buildteam@openeuler.org> - 1.3.6-3
 - Delete useless files.
 
-* Sun Sep 15 2019 dongjian <dongjian13@huawei.com> - 1.4.4-2
+* Sun Sep 15 2019 dongjian <dongjian13@huawei.com> - 1.3.6-2
 - Modification summary
