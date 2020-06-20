@@ -1,8 +1,8 @@
 %bcond_without pzstd
 
 Name:            zstd
-Version:         1.3.6
-Release:         3
+Version:         1.4.5
+Release:	0
 Summary:         A fast lossless compression algorithm
 License:         BSD and GPLv2
 URL:             https://github.com/facebook/zstd
@@ -48,7 +48,9 @@ done
 %endif
 
 %check
+%ifarch %{arm}
 make -C tests test-zstd
+%endif
 %if %{with pzstd}
 make -C contrib/pzstd test CXXFLAGS="$RPM_OPT_FLAGS -std=c++11"
 %endif
@@ -65,7 +67,7 @@ install -D -m644 programs/zstd.1 %{buildroot}%{_mandir}/man1/pzstd.1
 %endif
 
 %files
-%doc NEWS README.md
+%doc CHANGELOG README.md
 %license LICENSE COPYING
 %{_bindir}/*
 
@@ -85,6 +87,12 @@ install -D -m644 programs/zstd.1 %{buildroot}%{_mandir}/man1/pzstd.1
 %{_mandir}/man1/*.1*
 
 %changelog
+* Sat Jun 20 2020 maqiang<maqiang42@huawei.com> -1.4.5
+- Type:Update 
+- ID:
+- SUG:NA
+- DESC:Update to version 1.4.5
+
 * Mon Jan 13 2020 openEuler Buildteam <buildteam@openeuler.org> - 1.3.6-3
 - Delete useless files.
 
