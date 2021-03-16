@@ -2,11 +2,13 @@
 
 Name:            zstd
 Version:         1.4.5
-Release:	0
+Release:	 1
 Summary:         A fast lossless compression algorithm
 License:         BSD and GPLv2
 URL:             https://github.com/facebook/zstd
 Source0:         https://github.com/facebook/zstd/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
+
+Patch6000:       backport-CVE-2021-24032.patch
 
 BuildRequires:   gtest-devel gcc-c++ pkg-config
 
@@ -87,6 +89,12 @@ install -D -m644 programs/zstd.1 %{buildroot}%{_mandir}/man1/pzstd.1
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Mar 16 2021 shixuantong<shixuantong@huawei.com> - 1.4.5-1
+- Type:CVE
+- CVE:CVE-2021-24032
+- SUG:NA
+- DESC:fix CVE-2021-24032
+
 * Sat Jun 20 2020 maqiang<maqiang42@huawei.com> -1.4.5
 - Type:Update 
 - ID:
