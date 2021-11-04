@@ -13,7 +13,7 @@ diff -Nur zstd-1.5.0/programs/fileio.c new-zstd-1.5.0/programs/fileio.c
            && UTIL_stat(srcFileName, &statbuf)
            && UTIL_isRegularFileStat(&statbuf) ) {
              dstFilePermissions = statbuf.st_mode;
-+	    transferMTime = 0;
++	    transferMTime = 1;
          }
  
          closeDstFile = 1;
