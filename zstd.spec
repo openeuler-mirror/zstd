@@ -2,7 +2,7 @@
 
 Name:            zstd
 Version:         1.5.0
-Release:	 4
+Release:	 5
 Summary:         A fast lossless compression algorithm
 License:         BSD and GPLv2
 URL:             https://github.com/facebook/zstd
@@ -51,9 +51,7 @@ done
 %endif
 
 %check
-%ifarch %{arm}
 make -C tests test-zstd
-%endif
 %if %{with pzstd}
 make -C contrib/pzstd test CXXFLAGS="$RPM_OPT_FLAGS -std=c++11"
 %endif
@@ -90,6 +88,9 @@ install -D -m644 programs/zstd.1 %{buildroot}%{_mandir}/man1/pzstd.1
 %{_mandir}/man1/*.1*
 
 %changelog
+* Mon Nov 15 2021 zhangxiao <zhangxiao131@huawei.com> - 1.5.0.5
+* make the test in all archtectures
+
 * Mon Nov 08 2021 zhangying <zhangying103@huawei.com> - 1.5.0-4
 * remove invalid test
 
