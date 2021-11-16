@@ -2,7 +2,7 @@
 
 Name:            zstd
 Version:         1.5.0
-Release:	 5
+Release:	 6
 Summary:         A fast lossless compression algorithm
 License:         BSD and GPLv2
 URL:             https://github.com/facebook/zstd
@@ -11,6 +11,8 @@ Source0:         https://github.com/facebook/zstd/archive/v%{version}.tar.gz#/%{
 Patch1:		 backport-zstd-1.5.0-patch-1-set-mtime-on-output-files.patch 
 Patch2:          backport-zstd-1.5.0-patch-2-add-tests-set-mtime-on-output-files.patch
 Patch3:          backport-zstd-1.5.0-patch-3-remove-invalid-test.patch
+Patch4:          backport-zstd-1.5.0-patch-4-limit-train-samples.patch
+
 BuildRequires:   gtest-devel gcc-c++ pkg-config
 
 Provides:        libzstd
@@ -88,6 +90,9 @@ install -D -m644 programs/zstd.1 %{buildroot}%{_mandir}/man1/pzstd.1
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Nov 16 2021 zhangxiao <zhangxiao131@huawei.com> - 1.5.0.6
+* Limit train smaples
+
 * Mon Nov 15 2021 zhangxiao <zhangxiao131@huawei.com> - 1.5.0.5
 * make the test in all archtectures
 
