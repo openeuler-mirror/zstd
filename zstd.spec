@@ -2,7 +2,7 @@
 
 Name:            zstd
 Version:         1.5.0
-Release:	 7
+Release:	 8
 Summary:         A fast lossless compression algorithm
 License:         BSD and GPLv2
 URL:             https://github.com/facebook/zstd
@@ -12,6 +12,7 @@ Patch1:		 backport-zstd-1.5.0-patch-1-set-mtime-on-output-files.patch
 Patch2:          backport-zstd-1.5.0-patch-2-add-tests-set-mtime-on-output-files.patch
 Patch3:          backport-zstd-1.5.0-patch-3-remove-invalid-test.patch
 Patch4:          backport-zstd-1.5.0-patch-4-limit-train-samples.patch
+Patch5:          patch-5-add-test-case-survive-a-list-of-files-which-long-file-name-length.patch
 
 BuildRequires:   gtest-devel gcc-c++ pkg-config
 
@@ -90,6 +91,9 @@ install -D -m644 programs/zstd.1 %{buildroot}%{_mandir}/man1/pzstd.1
 %{_mandir}/man1/*.1*
 
 %changelog
+* Thu Nov 18 2021 zhangxiao <zhangxiao131@huawei.com> - 1.5.0.8
+* add test case survive a list of files which long file name length
+
 * Tue Nov 16 2021 zhangying <zhangying103@huawei.com> - 1.5.0.7
 * run the complete test case on ci
 
