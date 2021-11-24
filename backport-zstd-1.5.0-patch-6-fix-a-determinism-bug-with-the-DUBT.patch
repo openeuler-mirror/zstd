@@ -1,0 +1,39 @@
+diff -Nur zstd-1.5.0/lib/compress/zstd_compress_internal.h new-zstd/lib/compress/zstd_compress_internal.h
+--- zstd-1.5.0/lib/compress/zstd_compress_internal.h	2021-05-14 22:59:34.000000000 +0800
++++ new-zstd/lib/compress/zstd_compress_internal.h	2021-11-22 20:00:33.612480981 +0800
+@@ -199,6 +199,8 @@
+                                 */
+ } ZSTD_window_t;
+ 
++#define ZSTD_WINDOW_START_INDEX 2
++
+ typedef struct ZSTD_matchState_t ZSTD_matchState_t;
+ 
+ #define ZSTD_ROW_HASH_CACHE_SIZE 8       /* Size of prefetching hash cache for row-based matchfinder */
+@@ -884,9 +886,9 @@
+ 
+ MEM_STATIC U32 ZSTD_window_isEmpty(ZSTD_window_t const window)
+ {
+-    return window.dictLimit == 1 &&
+-           window.lowLimit == 1 &&
+-           (window.nextSrc - window.base) == 1;
++    return window.dictLimit == ZSTD_WINDOW_START_INDEX &&
++           window.lowLimit == ZSTD_WINDOW_START_INDEX &&
++           (window.nextSrc - window.base) == ZSTD_WINDOW_START_INDEX;
+ }
+ 
+ /**
+@@ -1151,9 +1153,10 @@
+     ZSTD_memset(window, 0, sizeof(*window));
+     window->base = (BYTE const*)"";
+     window->dictBase = (BYTE const*)"";
+-    window->dictLimit = 1;    /* start from 1, so that 1st position is valid */
+-    window->lowLimit = 1;     /* it ensures first and later CCtx usages compress the same */
+-    window->nextSrc = window->base + 1;   /* see issue #1241 */
++    ZSTD_STATIC_ASSERT(ZSTD_DUBT_UNSORTED_MARK < ZSTD_WINDOW_START_INDEX);
++    window->dictLimit = ZSTD_WINDOW_START_INDEX;    /* start from >0, so that 1st position is valid */
++    window->lowLimit = ZSTD_WINDOW_START_INDEX;     /* it ensures first and later CCtx usages compress the same */
++    window->nextSrc = window->base + ZSTD_WINDOW_START_INDEX;   /* see issue #1241 */
+     window->nbOverflowCorrections = 0;
+ }
+ 
