@@ -2,7 +2,7 @@
 
 Name:            zstd
 Version:         1.5.0
-Release:	 9
+Release:	 10
 Summary:         A fast lossless compression algorithm
 License:         BSD and GPLv2
 URL:             https://github.com/facebook/zstd
@@ -14,6 +14,7 @@ Patch3:          backport-zstd-1.5.0-patch-3-remove-invalid-test.patch
 Patch4:          backport-zstd-1.5.0-patch-4-limit-train-samples.patch
 Patch5:          patch-5-add-test-case-survive-a-list-of-files-which-long-file-name-length.patch
 Patch6:          backport-zstd-1.5.0-patch-6-fix-a-determinism-bug-with-the-DUBT.patch
+Patch7:          patch-7-add-test-case.patch
 
 BuildRequires:   gtest-devel gcc-c++ pkg-config
 
@@ -92,6 +93,9 @@ install -D -m644 programs/zstd.1 %{buildroot}%{_mandir}/man1/pzstd.1
 %{_mandir}/man1/*.1*
 
 %changelog
+* Fri Dec 03 2021 zhangxiao <zhangxiao131@huawei.com> - 1.5.0.10
+* add test case
+
 * Mon Nov 22 2021 wangshenglong <wangshenglong7@hauwei.com> - 1.5.0.9
 * fix a determinism bug with the DUBT
 
