@@ -1,0 +1,493 @@
+diff -Nur zstd-1.5.0/tests/decodecorpus.c zstd-1.5.0-new/tests/decodecorpus.c
+--- zstd-1.5.0/tests/decodecorpus.c	2021-05-14 22:59:34.000000000 +0800
++++ zstd-1.5.0-new/tests/decodecorpus.c	2021-12-09 14:36:53.425004688 +0800
+@@ -1541,6 +1541,7 @@
+ 
+     if (numFiles == 0 && !testDurationS) numFiles = 1;
+ 
++    DISPLAY("==== test/decodecorpus/runTestMode ====\n");
+     DISPLAY("seed: %u\n", (unsigned)seed);
+ 
+     for (fnum = 0; fnum < numFiles || UTIL_clockSpanMicro(startClock) < maxClockSpan; fnum++) {
+@@ -1552,12 +1553,13 @@
+         {   int const ret = (genType == gt_frame) ?
+                             runFrameTest(&seed) :
+                             runBlockTest(&seed);
+-            if (ret) return ret;
++            if (ret) {DISPLAY("==== results: passed: 0/1, failed: 1/1, skipped: 0/1 ====\n");return ret;}
+         }
+     }
+ 
+     DISPLAY("\r%u tests completed: ", fnum);
+     DISPLAY("OK\n");
++    DISPLAY("==== results: passed: 1/1, failed: 0/1, skipped: 0/1 ====\n");
+ 
+     return 0;
+ }
+@@ -1571,6 +1573,7 @@
+ {
+     frame_t fr;
+ 
++    DISPLAY("==== test/decodecorpus/gerenateFile ====\n");
+     DISPLAY("seed: %u\n", (unsigned)seed);
+ 
+     {   dictInfo const info = initDictInfo(0, 0, NULL, 0);
+@@ -1584,6 +1587,7 @@
+     if (origPath) {
+         outputBuffer(fr.srcStart, (BYTE*)fr.src - (BYTE*)fr.srcStart, origPath);
+     }
++    DISPLAY("==== results: passed: 1/1, failed: 0/1, skipped: 0/1 ====\n");
+     return 0;
+ }
+ 
+@@ -1593,6 +1597,7 @@
+     char outPath[MAX_PATH];
+     unsigned fnum;
+ 
++    DISPLAY("==== test/decodecorpus/generateCorpus ====\n");
+     DISPLAY("seed: %u\n", (unsigned)seed);
+ 
+     for (fnum = 0; fnum < numFiles; fnum++) {
+@@ -1610,6 +1615,7 @@
+ 
+         if (snprintf(outPath, MAX_PATH, "%s/z%06u.zst", path, fnum) + 1 > MAX_PATH) {
+             DISPLAY("Error: path too long\n");
++	    DISPLAY("==== results: passed: 0/1, failed: 1/1, skipped: 0/1 ====\n");
+             return 1;
+         }
+         outputBuffer(fr.dataStart, (BYTE*)fr.data - (BYTE*)fr.dataStart, outPath);
+@@ -1617,6 +1623,7 @@
+         if (origPath) {
+             if (snprintf(outPath, MAX_PATH, "%s/z%06u", origPath, fnum) + 1 > MAX_PATH) {
+                 DISPLAY("Error: path too long\n");
++		DISPLAY("==== results: passed: 0/1, failed: 1/1, skipped: 0/1 ====\n");
+                 return 1;
+             }
+             outputBuffer(fr.srcStart, (BYTE*)fr.src - (BYTE*)fr.srcStart, outPath);
+@@ -1624,7 +1631,7 @@
+     }
+ 
+     DISPLAY("\r%u/%u      \n", fnum, numFiles);
+-
++    DISPLAY("==== results: passed: 1/1, failed: 0/1, skipped: 0/1 ====\n");
+     return 0;
+ }
+ 
+@@ -1637,8 +1644,11 @@
+     U32 const dictID = RAND(&seed);
+     int errorDetected = 0;
+ 
++    DISPLAY("==== test/decodecorpus/generateCorpusWithDict ====\n");
++
+     if (snprintf(outPath, MAX_PATH, "%s/dictionary", path) + 1 > MAX_PATH) {
+         DISPLAY("Error: path too long\n");
++	DISPLAY("==== results: passed: 0/1, failed: 1/1, skipped: 0/1 ====\n");
+         return 1;
+     }
+ 
+@@ -1646,6 +1656,7 @@
+     fullDict = malloc(dictSize);
+     if (fullDict == NULL) {
+         DISPLAY("Error: could not allocate space for full dictionary.\n");
++	DISPLAY("==== results: passed: 0/1, failed: 1/1, skipped: 0/1 ====\n");
+         return 1;
+     }
+ 
+@@ -1714,6 +1725,8 @@
+     }
+ 
+ dictCleanup:
++    DISPLAY("==== results: passed: %d/1, failed: %d/1, skipped: 0/1 ====\n",
++           (1-errorDetected), errorDetected);
+     free(fullDict);
+     return errorDetected;
+ }
+diff -Nur zstd-1.5.0/tests/fullbench.c zstd-1.5.0-new/tests/fullbench.c
+--- zstd-1.5.0/tests/fullbench.c	2021-05-14 22:59:34.000000000 +0800
++++ zstd-1.5.0-new/tests/fullbench.c	2021-12-09 16:32:14.897179654 +0800
+@@ -474,7 +474,7 @@
+         benchFunction = local_ZSTD_compress_generic_T2_end; benchName = "compress_generic, -T2, end";
+         break;
+     default :
+-        return 0;
++        return -1;
+     }
+ 
+     /* Allocation */
+@@ -672,8 +672,15 @@
+                        size_t benchedSize, double compressibility,
+                        int cLevel, ZSTD_compressionParameters cparams)
+ {
++    int ret = 0;
++    int testOk = 0;
++    int testEr = 0;
++
+     /* Allocation */
+     void* const origBuff = malloc(benchedSize);
++
++    DISPLAY("==== test/fullbench/benchSample[compressibility:%f] ====\n", compressibility);   
++
+     if (!origBuff) { DISPLAY("\nError: not enough memory!\n"); return 12; }
+ 
+     /* Fill buffer */
+@@ -683,12 +690,31 @@
+     DISPLAY("\r%70s\r", "");
+     DISPLAY(" Sample %u bytes : \n", (unsigned)benchedSize);
+     if (benchNb) {
+-        benchMem(benchNb, origBuff, benchedSize, cLevel, cparams);
++        ret = benchMem(benchNb, origBuff, benchedSize, cLevel, cparams);
++	if ( 0 == ret )
++	{
++	    testOk++;
++	}
++	else if ( 1 == ret )
++	{
++	    testEr++;
++	}
+     } else {  /* 0 == run all tests */
+         for (benchNb=0; benchNb<100; benchNb++) {
+-            benchMem(benchNb, origBuff, benchedSize, cLevel, cparams);
++            ret = benchMem(benchNb, origBuff, benchedSize, cLevel, cparams);
++	    if ( 0 == ret )
++	    {
++	        testOk++;
++	    }
++	    else if ( 1 == ret )
++	    {
++	        testEr++;
++	    }
+     }   }
+ 
++    DISPLAY("==== results: passed: %d/%d, failed: %d/%d, skipped: 0/%d ====\n",
++	    testOk, (testOk+testEr), testEr, (testOk+testEr), (testOk+testEr));
++
+     free(origBuff);
+     return 0;
+ }
+@@ -700,6 +726,12 @@
+ {
+     /* Loop for each file */
+     int fileIdx;
++    int ret = 0;
++    int testOk = 0;
++    int testEr = 0;
++
++    DISPLAY("==== test/fullbench/benchFiles ====\n");
++
+     for (fileIdx=0; fileIdx<nbFiles; fileIdx++) {
+         const char* const inFileName = fileNamesTable[fileIdx];
+         FILE* const inFile = fopen( inFileName, "rb" );
+@@ -741,15 +773,34 @@
+             DISPLAY("\r%70s\r", "");   /* blank line */
+             DISPLAY(" %s : \n", inFileName);
+             if (benchNb) {
+-                benchMem(benchNb, origBuff, benchedSize, cLevel, cparams);
++                ret = benchMem(benchNb, origBuff, benchedSize, cLevel, cparams);
++		if ( 0 == ret )
++		{
++		    testOk++;
++		}
++		else if ( 1 == ret )
++		{
++		    testEr++;
++		}
+             } else {
+                 for (benchNb=0; benchNb<100; benchNb++) {
+-                    benchMem(benchNb, origBuff, benchedSize, cLevel, cparams);
++                    ret = benchMem(benchNb, origBuff, benchedSize, cLevel, cparams);
++		    if ( 0 == ret )
++		    {
++		         testOk++;
++		    }
++		    else if ( 1 == ret )
++		    {
++		         testEr++;
++		    }
+             }   }
+ 
+             free(origBuff);
+     }   }
+ 
++    DISPLAY("==== results: passed: %d/%d, failed: %d/%d, skipped: 0/%d ====\n",
++            testOk,(testOk+testEr),testEr,(testOk+testEr),(testOk+testEr));
++
+     return 0;
+ }
+ 
+diff -Nur zstd-1.5.0/tests/fuzzer.c zstd-1.5.0-new/tests/fuzzer.c
+--- zstd-1.5.0/tests/fuzzer.c	2021-05-14 22:59:34.000000000 +0800
++++ zstd-1.5.0-new/tests/fuzzer.c	2021-12-09 09:48:15.108283586 +0800
+@@ -472,6 +472,8 @@
+     unsigned testNb=0;
+     size_t cSize;
+ 
++    DISPLAY("==== test/fuzzer/basicUnitTest ====\n");
++
+     /* Create compressible noise */
+     if (!CNBuffer || !compressedBuffer || !decodedBuffer) {
+         DISPLAY("Not enough memory, aborting\n");
+@@ -3426,6 +3428,9 @@
+ #endif /* ZSTD_MULTITHREAD */
+ 
+ _end:
++    DISPLAY("==== results: passed: %d/%d, failed: %d/%d, skipped: 0/%d ====\n",
++            (testNb-testResult), testNb, testResult, testNb, testNb);
++
+     free(CNBuffer);
+     free(compressedBuffer);
+     free(decodedBuffer);
+@@ -3448,6 +3453,8 @@
+     unsigned testNb=0;
+     size_t cSize;
+ 
++    DISPLAY("==== test/fuzzer/longUnitTest ====\n");
++
+     /* Create compressible noise */
+     if (!CNBuffer || !compressedBuffer || !decodedBuffer) {
+         DISPLAY("Not enough memory, aborting\n");
+@@ -3626,6 +3633,10 @@
+     DISPLAYLEVEL(3, "OK \n");
+ 
+ _end:
++
++    DISPLAY("==== results: passed: %d/%d, failed: %d/%d, skipped: 0/%d ====\n",
++		    (testNb-testResult), testNb, testResult, testNb, testNb);
++
+     free(CNBuffer);
+     free(compressedBuffer);
+     free(decodedBuffer);
+@@ -3711,6 +3722,8 @@
+     U64 const maxClockSpan = maxDurationS * SEC_TO_MICRO;
+     int const cLevelLimiter = bigTests ? 3 : 2;
+ 
++    DISPLAY("==== test/fuzzer/fuzzerTests ====\n");
++
+     /* allocation */
+     cNoiseBuffer[0] = (BYTE*)malloc (srcBufferSize);
+     cNoiseBuffer[1] = (BYTE*)malloc (srcBufferSize);
+@@ -3974,6 +3987,9 @@
+     DISPLAY("\r%u fuzzer tests completed   \n", testNb-1);
+ 
+ _cleanup:
++    DISPLAY("==== results: passed: %d/1, failed: %d/1, skipped: 0/1 ====\n",
++            (1-result), result);
++
+     ZSTD_freeCCtx(refCtx);
+     ZSTD_freeCCtx(ctx);
+     ZSTD_freeDCtx(dctx);
+diff -Nur zstd-1.5.0/tests/invalidDictionaries.c zstd-1.5.0-new/tests/invalidDictionaries.c
+--- zstd-1.5.0/tests/invalidDictionaries.c	2021-05-14 22:59:34.000000000 +0800
++++ zstd-1.5.0-new/tests/invalidDictionaries.c	2021-12-09 10:44:46.819104816 +0800
+@@ -9,6 +9,7 @@
+  */
+ 
+ #include <stddef.h>
++#include <stdio.h>
+ #include "zstd.h"
+ 
+ static const char invalidRepCode[] = {
+@@ -38,23 +39,32 @@
+   {NULL, 0},
+ };
+ 
++#define DISPLAY(...)   fprintf(stderr, __VA_ARGS__)
++
+ int main(int argc, const char** argv) {
+   const dictionary *dict;
+   for (dict = dictionaries; dict->data != NULL; ++dict) {
+     ZSTD_CDict *cdict;
+     ZSTD_DDict *ddict;
++
++    DISPLAY("==== test/invalidDictionaries ====\n");
++
+     cdict = ZSTD_createCDict(dict->data, dict->size, 1);
+     if (cdict) {
+       ZSTD_freeCDict(cdict);
++      DISPLAY("==== results: passed: 0/2, failed: 1/2, skipped: 1/2 ====\n");
+       return 1;
+     }
+     ddict = ZSTD_createDDict(dict->data, dict->size);
+     if (ddict) {
+       ZSTD_freeDDict(ddict);
++      DISPLAY("==== results: passed: 1/2, failed: 1/2, skipped: 0/2 ====\n");
+       return 2;
+     }
+   }
+ 
++  DISPLAY("==== results: passed: 2/2, failed: 0/2, skipped: 0/2 ====\n");
++
+   (void)argc;
+   (void)argv;
+   return 0;
+diff -Nur zstd-1.5.0/tests/legacy.c zstd-1.5.0-new/tests/legacy.c
+--- zstd-1.5.0/tests/legacy.c	2021-05-14 22:59:34.000000000 +0800
++++ zstd-1.5.0-new/tests/legacy.c	2021-12-09 11:05:49.790480128 +0800
+@@ -160,14 +160,18 @@
+ 
+ int main(void)
+ {
++    DISPLAY ("==== test/legacy ====\n");
++
+     {   int const ret = testSimpleAPI();
+-        if (ret) return ret; }
++        if (ret) {DISPLAY("==== results: passed: 0/3, failed: 1/3, skipped: 2/3 ====\n");return ret;} }
+     {   int const ret = testStreamingAPI();
+-        if (ret) return ret; }
++        if (ret) {DISPLAY("==== results: passed: 1/3, failed: 1/3, skipped: 1/3 ====\n");return ret;} }
+     {   int const ret = testFrameDecoding();
+-        if (ret) return ret; }
++        if (ret) {DISPLAY("==== results: passed: 2/3, failed: 1/3, skipped: 0/3 ====\n");return ret;} }
+ 
+     DISPLAY("OK\n");
++    DISPLAY("==== results: passed: 3/3, failed: 0/3, skipped: 0/3 ====\n");
++
+     return 0;
+ }
+ 
+diff -Nur zstd-1.5.0/tests/playTests.sh zstd-1.5.0-new/tests/playTests.sh
+--- zstd-1.5.0/tests/playTests.sh	2021-05-14 22:59:34.000000000 +0800
++++ zstd-1.5.0-new/tests/playTests.sh	2021-12-13 15:05:29.027885006 +0800
+@@ -1664,3 +1664,5 @@
+ rm -f tmp* dictionary
+ 
+ rm -f tmp*
++
++println "all zstd cli tests passed"
+diff -Nur zstd-1.5.0/tests/poolTests.c zstd-1.5.0-new/tests/poolTests.c
+--- zstd-1.5.0/tests/poolTests.c	2021-05-14 22:59:34.000000000 +0800
++++ zstd-1.5.0-new/tests/poolTests.c	2021-12-09 15:07:25.250876163 +0800
+@@ -24,6 +24,7 @@
+   } while (0)
+ #define ASSERT_FALSE(p) ASSERT_TRUE(!(p))
+ #define ASSERT_EQ(lhs, rhs) ASSERT_TRUE((lhs) == (rhs))
++#define DISPLAY(...)   fprintf(stderr, __VA_ARGS__)
+ 
+ struct data {
+   ZSTD_pthread_mutex_t mutex;
+@@ -225,11 +226,16 @@
+ 
+ int main(int argc, const char **argv) {
+   size_t numThreads;
++  unsigned testNb = 0;  
++
+   (void)argc;
+   (void)argv;
+ 
++  DISPLAY("==== test/poolTests ====\n");
++
+   if (POOL_create(0, 1)) {   /* should not be possible */
+     printf("FAIL: should not create POOL with 0 threads\n");
++    DISPLAY("==== results; passed: 0/1, failed: 0/1, skipped: 0/1 ====\n");
+     return 1;
+   }
+ 
+@@ -240,32 +246,42 @@
+             (unsigned)queueSize, (unsigned)numThreads);
+       if (testOrder(numThreads, queueSize)) {
+         printf("FAIL: testOrder\n");
++	DISPLAY("==== results; passed: %d/%d, failed: 1/%d, skipped: 0/%d ====\n",
++	       testNb, (testNb+1), (testNb+1), (testNb+1));
+         return 1;
+       }
+-      printf("SUCCESS: testOrder\n");
++      printf("SUCCESS: testOrder\n");testNb++;
+       if (testWait(numThreads, queueSize)) {
+         printf("FAIL: testWait\n");
++        DISPLAY("==== results; passed: %d/%d, failed: 1/%d, skipped: 0/%d ====\n",
++	       testNb, (testNb+1), (testNb+1), (testNb+1));	
+         return 1;
+       }
+-      printf("SUCCESS: testWait\n");
++      printf("SUCCESS: testWait\n");testNb++;
+     }
+   }
+ 
+   if (testThreadReduction()) {
+       printf("FAIL: thread reduction not effective \n");
++      DISPLAY("==== results; passed: %d/%d, failed: 1/%d, skipped: 0/%d ====\n",
++	      testNb, (testNb+1), (testNb+1), (testNb+1));
+       return 1;
+   } else {
+-      printf("SUCCESS: thread reduction effective \n");
++      printf("SUCCESS: thread reduction effective \n");testNb++;
+   }
+ 
+   if (testAbruptEnding()) {
+       printf("FAIL: jobs in queue not completed on early end \n");
++      DISPLAY("==== results; passed: %d/%d, failed: 1/%d, skipped: 0/%d ====\n",
++		testNb, (testNb+1), (testNb+1), (testNb+1));      
+       return 1;
+   } else {
+-      printf("SUCCESS: all jobs in queue completed on early end \n");
++      printf("SUCCESS: all jobs in queue completed on early end \n");testNb++;
+   }
+ 
+   printf("PASS: all POOL tests\n");
++  DISPLAY("==== results; passed: %d/%d, failed: 0/%d, skipped: 0/%d ====\n",
++          testNb, testNb, testNb, testNb);
+ 
+   return 0;
+ }
+diff -Nur zstd-1.5.0/tests/zstreamtest.c zstd-1.5.0-new/tests/zstreamtest.c
+--- zstd-1.5.0/tests/zstreamtest.c	2021-05-14 22:59:34.000000000 +0800
++++ zstd-1.5.0-new/tests/zstreamtest.c	2021-12-09 10:16:25.467602447 +0800
+@@ -282,6 +282,8 @@
+     size_t const dictSize = 128 KB;
+     unsigned dictID = 0;
+ 
++    DISPLAY("==== test/zstreamtest/basicUnitTests ====\n");
++
+     /* Create compressible test buffer */
+     if (!CNBuffer || !compressedBuffer || !decodedBuffer || !zc || !zd || !mtctx) {
+         DISPLAY("Not enough memory, aborting \n");
+@@ -1691,6 +1693,10 @@
+     DISPLAYLEVEL(3, "OK \n");
+ 
+ _end:
++
++    DISPLAY("==== results: passed: %d/%d, failed: %d/%d, skipped: 0/%d ====\n",
++            (testNb-testResult), testNb, testResult, testNb, testNb);
++
+     FUZ_freeDictionary(dictionary);
+     ZSTD_freeCStream(zc);
+     ZSTD_freeDStream(zd);
+@@ -1778,6 +1784,8 @@
+     U32 oldTestLog = 0;
+     U32 const cLevelMax = bigTests ? (U32)ZSTD_maxCLevel() : g_cLevelMax_smallTests;
+ 
++    DISPLAY("==== test/zstreamtest/fuzzerTests ====\n");
++
+     /* allocations */
+     cNoiseBuffer[0] = (BYTE*)malloc (srcBufferSize);
+     cNoiseBuffer[1] = (BYTE*)malloc (srcBufferSize);
+@@ -1989,6 +1997,10 @@
+     DISPLAY("\r%u fuzzer tests completed   \n", testNb);
+ 
+ _cleanup:
++
++    DISPLAY("==== results: passed: %d/1, failed: %d/1, skipped: 0/1 ====\n",
++            (1-result), result);
++
+     ZSTD_freeCStream(zc);
+     ZSTD_freeDStream(zd);
+     ZSTD_freeDStream(zd_noise);
+@@ -2049,6 +2061,8 @@
+     U32 const nbThreadsMax = bigTests ? 4 : 2;
+     ZSTD_CCtx_params* cctxParams = ZSTD_createCCtxParams();
+ 
++    DISPLAY("==== test/zstreamtest/fuzzerTests_newAPI ====\n");
++
+     /* allocations */
+     cNoiseBuffer[0] = (BYTE*)malloc (srcBufferSize);
+     cNoiseBuffer[1] = (BYTE*)malloc (srcBufferSize);
+@@ -2423,6 +2437,10 @@
+     DISPLAY("\r%u fuzzer tests completed   \n", testNb-1);
+ 
+ _cleanup:
++
++    DISPLAY("==== results: passed: %d/1, failed: %d/1, skipped: 0/1 ====\n",
++           (1-result), result);
++
+     ZSTD_freeCCtx(zc);
+     ZSTD_freeDStream(zd);
+     ZSTD_freeDStream(zd_noise);
