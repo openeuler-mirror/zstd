@@ -2,7 +2,7 @@
 
 Name:            zstd
 Version:         1.5.0
-Release:	 12
+Release:	 13
 Summary:         A fast lossless compression algorithm
 License:         BSD and GPLv2
 URL:             https://github.com/facebook/zstd
@@ -17,6 +17,7 @@ Patch6:          backport-zstd-1.5.0-patch-6-fix-a-determinism-bug-with-the-DUBT
 Patch7:          patch-7-add-test-case.patch
 Patch8:          patch-8-fix-extra-newline-gets-printes-out-when-compressing-multiple-files.patch
 Patch9:          patch-9-add-test-c-result-print.patch
+Patch10:         backport-zstd-1.5.0-patch-10-fix-entropy-repeat-mode-bug.patch
 
 BuildRequires:   gtest-devel gcc-c++ pkg-config
 
@@ -95,6 +96,9 @@ install -D -m644 programs/zstd.1 %{buildroot}%{_mandir}/man1/pzstd.1
 %{_mandir}/man1/*.1*
 
 %changelog
+* Mon Dec 13 2021 zhangxiao <zhangxiao131@huawei.com> - 1.5.0.13
+* fix entropy repeat mode bug
+
 * Fri Dec 13 2021 liushiyuan <liushiyuan2@huawei.com> - 1.5.0.12
 * add test c result print
 
