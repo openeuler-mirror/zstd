@@ -1,0 +1,53 @@
+From 923e5ad3f5573cd68f792ebad49c24ecaa0c3ad0 Mon Sep 17 00:00:00 2001
+From: Sen Huang <senhuang96@fb.com>
+Date: Mon, 7 Jun 2021 00:32:03 -0700
+Subject: [PATCH 0721/1000] Fix entropy repeat mode bug
+
+---
+ lib/compress/zstd_compress.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/lib/compress/zstd_compress.c b/lib/compress/zstd_compress.c
+index 6afecfa1..dafe3cbd 100644
+--- a/lib/compress/zstd_compress.c
++++ b/lib/compress/zstd_compress.c
+@@ -3332,6 +3332,7 @@ static size_t ZSTD_estimateBlockSize(const BYTE* literals, size_t litSize,
+  */
+ static size_t ZSTD_buildEntropyStatisticsAndEstimateSubBlockSize(seqStore_t* seqStore, const ZSTD_CCtx* zc) {
+     ZSTD_entropyCTablesMetadata_t entropyMetadata;
++    DEBUGLOG(6, "ZSTD_buildEntropyStatisticsAndEstimateSubBlockSize()");
+     FORWARD_IF_ERROR(ZSTD_buildBlockEntropyStats(seqStore,
+                     &zc->blockState.prevCBlock->entropy,
+                     &zc->blockState.nextCBlock->entropy,
+@@ -3510,9 +3511,6 @@ static size_t ZSTD_compressSeqStore_singleBlock(ZSTD_CCtx* zc, seqStore_t* const
+         return 0;
+     }
+ 
+-    if (zc->blockState.prevCBlock->entropy.fse.offcode_repeatMode == FSE_repeat_valid)
+-        zc->blockState.prevCBlock->entropy.fse.offcode_repeatMode = FSE_repeat_check;
+-
+     if (cSeqsSize == 0) {
+         cSize = ZSTD_noCompressBlock(op, dstCapacity, ip, srcSize, lastBlock);
+         FORWARD_IF_ERROR(cSize, "Nocompress block failed");
+@@ -3529,6 +3527,10 @@ static size_t ZSTD_compressSeqStore_singleBlock(ZSTD_CCtx* zc, seqStore_t* const
+         cSize = ZSTD_blockHeaderSize + cSeqsSize;
+         DEBUGLOG(4, "Writing out compressed block, size: %zu", cSize);
+     }
++
++    if (zc->blockState.prevCBlock->entropy.fse.offcode_repeatMode == FSE_repeat_valid)
++        zc->blockState.prevCBlock->entropy.fse.offcode_repeatMode = FSE_repeat_check;
++
+     return cSize;
+ }
+ 
+@@ -3564,6 +3566,7 @@ static void ZSTD_deriveBlockSplitsHelper(seqStoreSplits* splits, size_t startIdx
+     size_t midIdx = (startIdx + endIdx)/2;
+ 
+     if (endIdx - startIdx < MIN_SEQUENCES_BLOCK_SPLITTING || splits->idx >= MAX_NB_SPLITS) {
++        DEBUGLOG(6, "ZSTD_deriveBlockSplitsHelper: Too few sequences");
+         return;
+     }
+     ZSTD_deriveSeqStoreChunk(&fullSeqStoreChunk, origSeqStore, startIdx, endIdx);
+-- 
+2.23.0
+
