@@ -2,7 +2,7 @@
 
 Name:            zstd
 Version:         1.5.0
-Release:	 14
+Release:	 15
 Summary:         A fast lossless compression algorithm
 License:         BSD and GPLv2
 URL:             https://github.com/facebook/zstd
@@ -19,6 +19,7 @@ Patch8:          patch-8-fix-extra-newline-gets-printes-out-when-compressing-mul
 Patch9:          patch-9-add-test-c-result-print.patch
 Patch10:         backport-zstd-1.5.0-patch-10-fix-entropy-repeat-mode-bug.patch
 Patch11:         backport-zstd-1.5.0-patch-11-Fix-progress-flag-to-properly-control-progress-display-and-default.patch
+Patch12:         backport-zstd-1.5.0-patch-12-Z_PREFIX-zError-function.patch
 
 BuildRequires:   gtest-devel gcc-c++ pkg-config
 
@@ -97,6 +98,9 @@ install -D -m644 programs/zstd.1 %{buildroot}%{_mandir}/man1/pzstd.1
 %{_mandir}/man1/*.1*
 
 %changelog
+* Tue Dec 14 2021 zhangxiao <zhangxiao131@huawei.com> - 1.5.0.15
+* Z_PREFIX zError function
+
 * Tue Dec 14 2021 zhangxiao <zhangxiao131@huawei.com> - 1.5.0.14
 * Fix progress flag to properly control progress display and default
 

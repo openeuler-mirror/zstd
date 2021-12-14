@@ -1,0 +1,28 @@
+From e00412f6b595c517ddc9ab44e810454e156dfb77 Mon Sep 17 00:00:00 2001
+From: koala <869829183@qq.com>
+Date: Fri, 11 Jun 2021 19:29:27 +0800
+Subject: [PATCH 0757/1000] Z_PREFIX  zError function
+
+When a project use zError function,linker can not find z_zError function
+---
+ zlibWrapper/zstd_zlibwrapper.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/zlibWrapper/zstd_zlibwrapper.c b/zlibWrapper/zstd_zlibwrapper.c
+index ceb23937..adb231f0 100644
+--- a/zlibWrapper/zstd_zlibwrapper.c
++++ b/zlibWrapper/zstd_zlibwrapper.c
+@@ -1189,3 +1189,10 @@ ZEXTERN const z_crc_t FAR * ZEXPORT z_get_crc_table    OF((void))
+     return get_crc_table();
+ }
+ #endif
++
++                        /* Error function */
++ZEXTERN const char * ZEXPORT z_zError OF((int err))
++{
++    /* Just use zlib Error function */
++    return zError(err);
++}
+-- 
+2.23.0
+
