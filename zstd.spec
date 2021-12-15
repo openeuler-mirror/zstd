@@ -2,7 +2,7 @@
 
 Name:            zstd
 Version:         1.5.0
-Release:	 16
+Release:	 17
 Summary:         A fast lossless compression algorithm
 License:         BSD and GPLv2
 URL:             https://github.com/facebook/zstd
@@ -21,6 +21,7 @@ Patch10:         backport-zstd-1.5.0-patch-10-fix-entropy-repeat-mode-bug.patch
 Patch11:         backport-zstd-1.5.0-patch-11-Fix-progress-flag-to-properly-control-progress-display-and-default.patch
 Patch12:         backport-zstd-1.5.0-patch-12-Z_PREFIX-zError-function.patch
 Patch13:         backport-zstd-1.5.0-patch-13-fix-Add-missing-bounds-checks-during-compression.patch
+Patch14:         patch-14-fix-pooltests-result-print.patch
 
 BuildRequires:   gtest-devel gcc-c++ pkg-config
 
@@ -99,6 +100,9 @@ install -D -m644 programs/zstd.1 %{buildroot}%{_mandir}/man1/pzstd.1
 %{_mandir}/man1/*.1*
 
 %changelog
+* Wed Dec 15 2021 liushiyuan <liushiyuan2@huawei.com> - 1.5.0.17
+* fix test-pool result print
+
 * Tue Dec 14 2021 zhangxiao <zhangxiao131@huawei.com> - 1.5.0.16
 * fix Add missing bounds checks during compression
 
@@ -111,7 +115,7 @@ install -D -m644 programs/zstd.1 %{buildroot}%{_mandir}/man1/pzstd.1
 * Mon Dec 13 2021 zhangxiao <zhangxiao131@huawei.com> - 1.5.0.13
 * fix entropy repeat mode bug
 
-* Fri Dec 13 2021 liushiyuan <liushiyuan2@huawei.com> - 1.5.0.12
+* Mon Dec 13 2021 liushiyuan <liushiyuan2@huawei.com> - 1.5.0.12
 * add test c result print
 
 * Mon Dec 06 2021 helei <helei28@huawei.com> - 1.5.0.11
