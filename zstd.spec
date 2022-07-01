@@ -1,27 +1,12 @@
 %bcond_without pzstd
 
 Name:            zstd
-Version:         1.5.0
-Release:	 17
+Version:         1.5.2
+Release:	 1
 Summary:         A fast lossless compression algorithm
 License:         BSD and GPLv2
 URL:             https://github.com/facebook/zstd
 Source0:         https://github.com/facebook/zstd/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
-
-Patch1:		 backport-zstd-1.5.0-patch-1-set-mtime-on-output-files.patch 
-Patch2:          backport-zstd-1.5.0-patch-2-add-tests-set-mtime-on-output-files.patch
-Patch3:          backport-zstd-1.5.0-patch-3-remove-invalid-test.patch
-Patch4:          backport-zstd-1.5.0-patch-4-limit-train-samples.patch
-Patch5:          patch-5-add-test-case-survive-a-list-of-files-which-long-file-name-length.patch
-Patch6:          backport-zstd-1.5.0-patch-6-fix-a-determinism-bug-with-the-DUBT.patch
-Patch7:          patch-7-add-test-case.patch
-Patch8:          patch-8-fix-extra-newline-gets-printes-out-when-compressing-multiple-files.patch
-Patch9:          patch-9-add-test-c-result-print.patch
-Patch10:         backport-zstd-1.5.0-patch-10-fix-entropy-repeat-mode-bug.patch
-Patch11:         backport-zstd-1.5.0-patch-11-Fix-progress-flag-to-properly-control-progress-display-and-default.patch
-Patch12:         backport-zstd-1.5.0-patch-12-Z_PREFIX-zError-function.patch
-Patch13:         backport-zstd-1.5.0-patch-13-fix-Add-missing-bounds-checks-during-compression.patch
-Patch14:         patch-14-fix-pooltests-result-print.patch
 
 BuildRequires:   gtest-devel gcc-c++ pkg-config
 
@@ -100,6 +85,9 @@ install -D -m644 programs/zstd.1 %{buildroot}%{_mandir}/man1/pzstd.1
 %{_mandir}/man1/*.1*
 
 %changelog
+* Thu Apr 14 2022 YukariChiba <i@0x7f.cc> - 1.5.2-1
+- Upgrade version to 1.5.2
+
 * Wed Dec 15 2021 liushiyuan <liushiyuan2@huawei.com> - 1.5.0.17
 * fix test-pool result print
 
